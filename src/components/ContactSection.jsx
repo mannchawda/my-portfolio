@@ -1,7 +1,16 @@
 "use client";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function ContactSection() {
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText("mann.chawda.work@gmail.com");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <section id="contact" className="py-32 px-6 border-t border-white/5">
       <div className="max-w-3xl mx-auto text-center">
@@ -17,16 +26,26 @@ export default function ContactSection() {
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
             Let us work together
           </h2>
-          <p className="text-gray-400 text-xl leading-relaxed mb-12">
+          <p className="text-gray-400 text-xl leading-relaxed mb-4">
             Have a project in mind? Whether it is a game prop, product render, environment, or
-            something entirely new — I would love to hear about it. Open to freelance work and
-            creative collaborations.
+            something entirely new — I would love to hear about it.
           </p>
 
-          {/* Primary CTA */}
+          <div
+            onClick={copyEmail}
+            className="inline-flex items-center gap-3 bg-white/5 border border-white/10 hover:border-purple-500/50 rounded-full px-6 py-3 mb-8 cursor-pointer transition-all duration-200 group"
+          >
+            <span className="text-gray-300 text-sm font-mono">mann.chawda.work@gmail.com</span>
+            <span className="text-xs text-gray-500 group-hover:text-purple-400 transition-colors">
+              {copied ? "Copied!" : "Copy"}
+            </span>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
             <a
-              href="mailto:mann.chawda.work@gmail.com"
+              href="https://mail.google.com/mail/?view=cm&to=mann.chawda.work@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-10 py-4 bg-purple-600 hover:bg-purple-500 rounded-full text-base font-medium transition-all duration-200 hover:scale-105"
             >
               Email Me
@@ -41,7 +60,6 @@ export default function ContactSection() {
             </a>
           </div>
 
-          {/* Social links */}
           <div className="flex gap-4 justify-center mb-16">
             <a
               href="https://www.instagram.com/mann.chawda_5501"
@@ -61,7 +79,6 @@ export default function ContactSection() {
             </a>
           </div>
 
-          {/* Info row */}
           <div className="grid grid-cols-3 gap-8 pt-12 border-t border-white/10">
             <div>
               <div className="text-white font-medium mb-1">Based in</div>
