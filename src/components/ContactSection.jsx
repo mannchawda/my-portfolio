@@ -32,7 +32,7 @@ export default function ContactSection() {
               Email Me
             </a>
             <a
-              href="https://www.behance.net/mannchawda"
+              href="https://www.behance.net/mann_chawda5501"
               target="_blank"
               rel="noopener noreferrer"
               className="px-10 py-4 border border-white/20 hover:border-white/50 rounded-full text-base font-medium transition-all duration-200 hover:scale-105"
@@ -52,7 +52,7 @@ export default function ContactSection() {
               Instagram
             </a>
             <a
-              href="https://www.linkedin.com/in/mann-chawda"
+              href="https://www.linkedin.com/in/mann-chawda-98768223a/"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2 border border-white/10 hover:border-white/30 rounded-full text-sm text-gray-400 hover:text-white transition-all duration-200"
