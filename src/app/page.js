@@ -12,10 +12,14 @@ export default function Home() {
     setTimeout(() => setLoaded(true), 100);
   }, []);
 
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
     <main className="min-h-screen bg-black text-white">
 
-      {/* Hero */}
       <section className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-6">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-purple-600/10 blur-[120px]" />
@@ -35,12 +39,18 @@ export default function Home() {
             architectural environments and isometric scenes in Blender. Open for freelance work.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <a href="#projects" className="px-8 py-3 bg-purple-600 hover:bg-purple-500 rounded-full text-sm font-medium transition-colors duration-200">
+            <button
+              onClick={() => scrollTo("projects")}
+              className="px-8 py-3 bg-purple-600 hover:bg-purple-500 rounded-full text-sm font-medium transition-colors duration-200"
+            >
               View My Work
-            </a>
-            <a href="mailto:mann.chawda.work@gmail.com" className="px-8 py-3 border border-white/20 hover:border-white/50 rounded-full text-sm font-medium transition-colors duration-200">
+            </button>
+            <button
+              onClick={() => scrollTo("contact")}
+              className="px-8 py-3 border border-white/20 hover:border-white/50 rounded-full text-sm font-medium transition-colors duration-200"
+            >
               Get in Touch
-            </a>
+            </button>
           </div>
         </div>
 
@@ -54,7 +64,6 @@ export default function Home() {
       <AboutSection />
       <ContactSection />
 
-      {/* Footer */}
       <footer className="border-t border-white/5 py-8 px-6 text-center">
         <p className="text-gray-600 text-sm">
           Mann N. Chawda — MNC. &nbsp;|&nbsp; Surat, Gujarat, India &nbsp;|&nbsp;
@@ -64,9 +73,7 @@ export default function Home() {
         </p>
       </footer>
 
-      {/* Admin Panel */}
       <AdminPanel />
-
     </main>
   );
 }
