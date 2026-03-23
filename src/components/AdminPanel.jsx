@@ -136,15 +136,16 @@ export default function AdminPanel() {
 
   return (
     <>
-      {/* Floating gear button — visible to all but protected inside */}
+      {/* Floating person icon button — barely visible, only for admin */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-zinc-800 hover:bg-zinc-700 border border-white/10 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 opacity-30 hover:opacity-100"
+        className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 opacity-20 hover:opacity-100"
+        style={{ background: "rgba(109, 40, 217, 0.3)" }}
         title="Admin"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="8" r="4" fill="#a78bfa"/>
+          <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" stroke="#a78bfa" strokeWidth="1.5" strokeLinecap="round"/>
         </svg>
       </button>
 
@@ -189,9 +190,9 @@ export default function AdminPanel() {
               {!authenticated ? (
                 <div className="flex flex-col items-center justify-center p-12 gap-6">
                   <div className="w-16 h-16 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#a78bfa" strokeWidth="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
                   </div>
                   <div className="text-center">
@@ -206,7 +207,7 @@ export default function AdminPanel() {
                         value={passwordInput}
                         onChange={(e) => setPasswordInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                        className={`w-full bg-black/50 border rounded-xl px-4 py-3 text-white text-sm focus:outline-none pr-10 transition-colors ${
+                        className={`w-full bg-black/50 border rounded-xl px-4 py-3 text-white text-sm focus:outline-none pr-12 transition-colors ${
                           passwordError ? "border-red-500/50 bg-red-500/5" : "border-white/10 focus:border-purple-500/50"
                         }`}
                       />
@@ -230,7 +231,6 @@ export default function AdminPanel() {
                 </div>
               ) : (
                 <>
-                  {/* Tabs */}
                   <div className="flex border-b border-white/10 flex-shrink-0 overflow-x-auto">
                     {tabs.map((t) => (
                       <button
@@ -243,7 +243,6 @@ export default function AdminPanel() {
                     ))}
                   </div>
 
-                  {/* Content */}
                   <div className="overflow-y-auto flex-1 p-6">
 
                     {tab === "profile" && profile && (
