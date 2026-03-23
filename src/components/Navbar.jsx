@@ -14,6 +14,12 @@ export default function Navbar() {
 
   const links = ["Projects", "About", "Contact"];
 
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+    setMenuOpen(false);
+  }
+
   return (
     <motion.nav
       initial={{ y: -100, opacity: 0 }}
@@ -30,20 +36,20 @@ export default function Navbar() {
 
       <div className="hidden md:flex items-center gap-8">
         {links.map((link) => (
-          <a
+          <button
             key={link}
-            href={"#" + link.toLowerCase()}
+            onClick={() => scrollTo(link.toLowerCase())}
             className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
           >
             {link}
-          </a>
+          </button>
         ))}
-        <a
-          href="mailto:mann.chawda.work@gmail.com"
+        <button
+          onClick={() => scrollTo("contact")}
           className="px-5 py-2 bg-purple-600 hover:bg-purple-500 rounded-full text-sm font-medium transition-colors duration-200"
         >
           Hire Me
-        </a>
+        </button>
       </div>
 
       <button
@@ -58,21 +64,20 @@ export default function Navbar() {
       {menuOpen && (
         <div className="absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-b border-white/10 flex flex-col p-6 gap-4 md:hidden">
           {links.map((link) => (
-            <a
+            <button
               key={link}
-              href={"#" + link.toLowerCase()}
-              className="text-gray-400 hover:text-white text-sm transition-colors"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => scrollTo(link.toLowerCase())}
+              className="text-gray-400 hover:text-white text-sm transition-colors text-left"
             >
               {link}
-            </a>
+            </button>
           ))}
-          <a
-            href="mailto:mann.chawda.work@gmail.com"
-            className="px-5 py-2 bg-purple-600 hover:bg-purple-500 rounded-full text-sm font-medium text-center"
+          <button
+            onClick={() => scrollTo("contact")}
+            className="px-5 py-2 bg-purple-600 hover:bg-purple-500 rounded-full text-sm font-medium text-center transition-colors duration-200"
           >
             Hire Me
-          </a>
+          </button>
         </div>
       )}
     </motion.nav>

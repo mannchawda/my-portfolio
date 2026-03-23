@@ -48,16 +48,10 @@ export default function ProjectsSection() {
     { label: "Slate", value: "from-slate-800 to-zinc-700" },
   ];
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  useEffect(() => { fetchProjects(); }, []);
 
   useEffect(() => {
-    if (selectedProject) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = selectedProject ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [selectedProject]);
 
@@ -67,11 +61,7 @@ export default function ProjectsSection() {
       .from("projects")
       .select("*")
       .order("order_index", { ascending: true });
-    if (error) {
-      setProjects(fallbackProjects);
-    } else {
-      setProjects(data && data.length > 0 ? data : fallbackProjects);
-    }
+    setProjects(error || !data?.length ? fallbackProjects : data);
     setLoading(false);
   }
 
@@ -90,19 +80,13 @@ export default function ProjectsSection() {
       const fileExt = imageFile.name.split(".").pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const { error: uploadError } = await supabase.storage
-        .from("project-images")
-        .upload(fileName, imageFile);
+        .from("project-images").upload(fileName, imageFile);
       if (!uploadError) {
         image_url = `${SUPABASE_URL}/storage/v1/object/public/project-images/${fileName}`;
       }
     }
     const { error } = await supabase.from("projects").insert([{
-      title: form.title,
-      category: form.category,
-      year: form.year,
-      description: form.description,
-      color: form.color,
-      image_url,
+      ...form, image_url,
       order_index: projects.filter((p) => !p.placeholder).length + 1,
     }]);
     if (!error) {
@@ -113,13 +97,6 @@ export default function ProjectsSection() {
       fetchProjects();
     }
     setUploading(false);
-  }
-
-  async function handleDelete(e, id) {
-    e.stopPropagation();
-    if (!confirm("Delete this project?")) return;
-    await supabase.from("projects").delete().eq("id", id);
-    fetchProjects();
   }
 
   return (
@@ -247,16 +224,10 @@ export default function ProjectsSection() {
                 )}
                 {!project.placeholder && (
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                    <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-medium bg-black/50 px-4 py-2 rounded-full">View Project</span>
+                    <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-medium bg-black/50 px-4 py-2 rounded-full">
+                      View Project
+                    </span>
                   </div>
-                )}
-                {!project.placeholder && (
-                  <button
-                    onClick={(e) => handleDelete(e, project.id)}
-                    className="absolute top-3 right-3 w-7 h-7 bg-black/60 hover:bg-red-600/80 rounded-full text-white/50 hover:text-white text-xs transition-all duration-200 opacity-0 group-hover:opacity-100 z-10"
-                  >
-                    x
-                  </button>
                 )}
               </div>
               <div className="p-6 bg-zinc-900/80 backdrop-blur-sm">
@@ -292,14 +263,11 @@ export default function ProjectsSection() {
               onClick={(e) => e.stopPropagation()}
               className="bg-zinc-900 border border-white/10 rounded-3xl overflow-hidden max-w-3xl w-full max-h-[90vh] overflow-y-auto"
             >
-              {/* Image */}
               {selectedProject.image_url && (
                 <div className="w-full h-72 md:h-96 overflow-hidden">
                   <img src={selectedProject.image_url} alt={selectedProject.title} className="w-full h-full object-cover" />
                 </div>
               )}
-
-              {/* Content */}
               <div className="p-8">
                 <div className="flex items-start justify-between mb-4">
                   <div>
@@ -311,14 +279,12 @@ export default function ProjectsSection() {
                   </div>
                   <button
                     onClick={() => setSelectedProject(null)}
-                    className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200 flex-shrink-0 ml-4"
+                    className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200 flex-shrink-0 ml-4 text-lg"
                   >
                     x
                   </button>
                 </div>
-
                 <p className="text-gray-300 text-base leading-relaxed mb-8">{selectedProject.description}</p>
-
                 <div className="flex items-center gap-3 pt-6 border-t border-white/10">
                   <span className="text-gray-500 text-sm">Tools used:</span>
                   <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-300 text-xs">Blender 3D</span>
