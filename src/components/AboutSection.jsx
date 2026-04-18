@@ -1,14 +1,43 @@
 "use client";
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
+
+function AnimatedNumber({ target, duration = 2000 }) {
+  const [current, setCurrent] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const isNumeric = !isNaN(parseFloat(target));
+  const numericValue = parseFloat(target);
+  const suffix = isNumeric ? target.replace(String(numericValue), "") : "";
+
+  useEffect(() => {
+    if (!inView || !isNumeric) return;
+    const start = 0;
+    const end = numericValue;
+    const steps = 60;
+    const increment = end / steps;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      const value = Math.min(Math.round(increment * step * 10) / 10, end);
+      setCurrent(value);
+      if (step >= steps) clearInterval(timer);
+    }, duration / steps);
+    return () => clearInterval(timer);
+  }, [inView, numericValue, duration, isNumeric]);
+
+  return (
+    <span ref={ref}>
+      {isNumeric ? `${current % 1 === 0 ? current : current.toFixed(1)}${suffix}` : target}
+    </span>
+  );
+}
 
 export default function AboutSection() {
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  useEffect(() => { fetchProfile(); }, []);
 
   async function fetchProfile() {
     const { data } = await supabase.from("profile").select("*").eq("id", 1).single();
@@ -43,7 +72,6 @@ export default function AboutSection() {
             Turning ideas into 3D realities
           </h2>
 
-          {/* Profile photo */}
           {profile?.photo_url && (
             <div className="mb-8 flex items-center gap-5">
               <div className="relative">
@@ -67,13 +95,17 @@ export default function AboutSection() {
           </p>
 
           <div className="flex flex-wrap gap-3 mt-8">
-            {skills.map((skill) => (
-              <span
+            {skills.map((skill, i) => (
+              <motion.span
                 key={skill}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+                viewport={{ once: true }}
                 className="px-4 py-2 border border-white/10 rounded-full text-sm text-gray-300 hover:border-purple-500/50 hover:text-purple-300 transition-colors duration-200"
               >
                 {skill}
-              </span>
+              </motion.span>
             ))}
           </div>
         </motion.div>
@@ -95,7 +127,7 @@ export default function AboutSection() {
               className="bg-zinc-900 border border-white/10 rounded-2xl p-8 text-center hover:border-purple-500/30 transition-colors duration-300"
             >
               <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 mb-2">
-                {stat.number}
+                <AnimatedNumber target={stat.number} />
               </div>
               <div className="text-gray-400 text-sm">{stat.label}</div>
             </motion.div>

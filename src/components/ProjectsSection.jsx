@@ -7,9 +7,9 @@ const fallbackProjects = [
   {
     id: 1,
     title: "No Projects Yet",
-    category: "Add via Admin Panel",
+    category: "Other",
     year: "2024",
-    description: "Click the settings button in the bottom right corner to add your first project.",
+    description: "Open the admin panel to add your first project.",
     color: "from-purple-900 to-violet-800",
     image_url: null,
     placeholder: true,
@@ -20,6 +20,8 @@ export default function ProjectsSection() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [filters, setFilters] = useState(["All"]);
 
   useEffect(() => { fetchProjects(); }, []);
 
@@ -34,9 +36,16 @@ export default function ProjectsSection() {
       .from("projects")
       .select("*")
       .order("order_index", { ascending: true });
-    setProjects(error || !data?.length ? fallbackProjects : data);
+    const list = error || !data?.length ? fallbackProjects : data;
+    setProjects(list);
+    const cats = ["All", ...new Set(list.filter(p => !p.placeholder).map(p => p.category))];
+    setFilters(cats);
     setLoading(false);
   }
+
+  const filtered = activeFilter === "All"
+    ? projects
+    : projects.filter(p => p.category === activeFilter);
 
   return (
     <section id="projects" className="py-32 px-6 max-w-7xl mx-auto">
@@ -45,11 +54,36 @@ export default function ProjectsSection() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
         viewport={{ once: true }}
-        className="mb-16"
+        className="mb-12"
       >
         <p className="text-purple-400 text-sm font-mono tracking-[0.3em] uppercase mb-4">Selected Work</p>
         <h2 className="text-5xl md:text-6xl font-bold text-white">Projects</h2>
       </motion.div>
+
+      {/* Filter buttons */}
+      {!loading && filters.length > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="flex flex-wrap gap-3 mb-12"
+        >
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                activeFilter === filter
+                  ? "bg-purple-600 text-white"
+                  : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/10"
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </motion.div>
+      )}
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -65,50 +99,54 @@ export default function ProjectsSection() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project, i) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -8, transition: { duration: 0.2 } }}
-              onClick={() => !project.placeholder && setSelectedProject(project)}
-              className={`group relative rounded-2xl overflow-hidden border border-white/10 ${!project.placeholder ? "cursor-pointer" : ""}`}
-            >
-              <div className="relative h-56 w-full overflow-hidden">
-                {project.image_url ? (
-                  <img src={project.image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                ) : (
-                  <div className={`w-full h-full bg-gradient-to-br ${project.color || "from-purple-900 to-violet-800"} flex items-center justify-center`}>
-                    <div className="text-center px-6">
-                      <div className="text-5xl mb-3 text-white/20">+</div>
-                      <p className="text-white/40 text-sm">Add projects via admin panel</p>
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence>
+            {filtered.map((project, i) => (
+              <motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4, delay: i * 0.05 }}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                onClick={() => !project.placeholder && setSelectedProject(project)}
+                className={`group relative rounded-2xl overflow-hidden border border-white/10 ${!project.placeholder ? "cursor-pointer" : ""}`}
+              >
+                <div className="relative h-56 w-full overflow-hidden">
+                  {project.image_url ? (
+                    <img src={project.image_url} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${project.color || "from-purple-900 to-violet-800"} flex items-center justify-center`}>
+                      <div className="text-center px-6">
+                        <div className="text-5xl mb-3 text-white/20">+</div>
+                        <p className="text-white/40 text-sm">Add via admin panel</p>
+                      </div>
                     </div>
-                  </div>
-                )}
-                {!project.placeholder && (
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                    <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-medium bg-black/50 px-4 py-2 rounded-full">
-                      View Project
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="p-6 bg-zinc-900/80 backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-purple-400 text-xs font-mono tracking-wider uppercase">{project.category}</span>
-                  <span className="text-gray-500 text-xs">{project.year}</span>
+                  )}
+                  {!project.placeholder && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                      <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-medium bg-black/50 px-4 py-2 rounded-full">
+                        View Project
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-white font-bold text-xl mb-2 group-hover:text-purple-300 transition-colors">{project.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">{project.description}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                <div className="p-6 bg-zinc-900/80 backdrop-blur-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-purple-400 text-xs font-mono tracking-wider uppercase">{project.category}</span>
+                    <span className="text-gray-500 text-xs">{project.year}</span>
+                  </div>
+                  <h3 className="text-white font-bold text-xl mb-2 group-hover:text-purple-300 transition-colors">{project.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">{project.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
 
+      {/* Project Detail Popup */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
